@@ -139,7 +139,7 @@ def publish_forever(config, librato_client):
                 db_stats = fetch_db_stats(cur, db["database"], version)
                 index_sizes = fetch_index_sizes(cur)
 
-                print(".", end="") # TODO: Add CLI flag --feedback
+                #print(".", end="") # TODO: Add CLI flag --feedback
 
                 q.add('postgres.pg_stat.index_hits', index_hits, source=source)
                 q.add('postgres.pg_stat.cache_hits', cache_hits, source=source)
@@ -159,9 +159,12 @@ def publish_forever(config, librato_client):
             cur.close()
             conn.close()
 
-        q.submit()
+        try:
+            q.submit()
+        except Exception as e:
+            print(repr(e))
+
         time.sleep(config["interval"])
-        print()
 
 
 if __name__ == '__main__':
